@@ -1,0 +1,25 @@
+{% extends "base.html" %} 
+{% load blog_tags %}
+{% load cache %}
+
+{% block content %}
+<h2>Кулинарный портал</h2>
+<div class="d-flex justify-content-between">
+    <div class="col-3">
+        <!-- Sidebar -->
+    {% cache 500 sidebar %}
+        {% get_all_categories as categories %}
+        {% for category in categories %}
+            {% include 'cooking/components/_category_buttons.html' %}
+        {% endfor %}
+    {% endcache %}
+    </div>
+    <!-- Posts -->
+    <div class="col-8">
+        <!-- Post -->
+        {% for post in posts %}
+            {% include 'cooking/components/_post_list.html' %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

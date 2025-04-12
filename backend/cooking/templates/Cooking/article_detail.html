@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                {{ post.category }}
+                <div>
+                    {% if request.user == post.author %} 
+                        <a href="{% url 'post_delete' post.pk %}" class="btn btn-dark">Удалить</a>
+                        <a href="{% url 'post_update' post.pk %}" class="btn btn-dark">Изменить</a>
+                    {% endif %}
+                    <a href="{% url 'category_list' post.category.pk %}" class="btn btn-dark">Назад</a>
+                </div>
+            </div>
+            <img src="" class="card-img-top" alt="">
+            <div class="card-body">
+                {% if post.photo %}
+                    <img src="{{ post.photo.url }}" width="300" alt="">
+                {% else %}
+                    <img src="https://www.raumplus.ru/upload/iblock/99e/Skoro-zdes-budet-foto.jpg" width="300" alt="">
+                {% endif %}
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.content | linebreaks }}</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <p class="card-text">{{ post.created_at|date:"d.m.Y H:i" }}</p>
+                {% if post.author.pk %}
+                    <a href="{% url 'profile' post.author.pk %}">Автор статьи: {{ post.author }}</a>
+                {% else %}
+                    <p>Автор статьи: Неизвестный автор</p>
+                {% endif %}
+                <p class="card-text">{{ post.watched }}</p>
+            </div>
+        </div>
+        <hr>
+
+        <!-- Reviews -->
+        {% if request.user.is_authenticated %}
+        <form action="{% url 'add_comment' post.pk %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% include 'components/_form_errors.html' %}
+            {{ comment_form.text }}
+            <button class="btn btn-dark" type="submit">Добавить комментарий</button>
+        </form>
+        {% endif %}
+        {% for comment in comments %}
+        <div class="card mt-2">
+            <h5 class="card-header">{{ comment.user }} ({{ comment.created_at }})</h5>
+            <div class="card-body">
+                <p class="card-text">{{ comment.text }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <!-- Recommendation -->
+    <div class="col-1"></div>
+    <div class="col-4">
+        {% for ext in ext_posts %}
+            <div class="card" style="width: 18rem;">
+                {% if ext.photo %}
+                    <img src="{{ ext.photo.url }}" width="300" alt="">
+                {% else %}
+                    <img class="card-img-top" src="https://www.raumplus.ru/upload/iblock/99e/Skoro-zdes-budet-foto.jpg" width="200" alt="">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ ext.title }}</h5>
+                    <a href="{{ ext.get_absolute_url }}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}
