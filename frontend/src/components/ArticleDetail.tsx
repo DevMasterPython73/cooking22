@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { authService } from '../services/auth';
-import api from '../services/api';
+import { api } from '../services/api';
 import { toast } from 'react-toastify';
 
 interface Comment {
