@@ -196,7 +196,7 @@ CACHES = {
 
 # Настройки CORS для разработки
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # для Next.js
+    "http://localhost:3000",
 ]
 
 # REST Framework настройки

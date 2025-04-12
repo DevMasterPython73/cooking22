@@ -15,6 +15,7 @@ from django.views.generic import TemplateView
 from rest_framework.views import APIView  # Добавлен импорт APIView
 from rest_framework.response import Response  # Добавлен импорт Response
 from rest_framework import status  # Добавлен импорт status
+from rest_framework import generics
 
 
 class UserChangePassword(PasswordChangeView):
@@ -222,3 +223,13 @@ class SwaggerApiDoc(TemplateView):
     extra_context = {
         'schema_url': 'openapi-schema'
     }
+
+
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class PostListView(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer

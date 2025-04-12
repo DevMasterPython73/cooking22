@@ -2,7 +2,7 @@ import axios from 'axios';
 import { authService } from './auth';
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -26,28 +26,32 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // Если ошибка 401 и это не повторный запрос
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
-                // Пробуем обновить токен
-                const { access } = await authService.refresh();
-                
-                // Обновляем заголовок с новым токеном
-                originalRequest.headers.Authorization = `Bearer ${access}`;
-                
-                // Повторяем исходный запрос
+                const tokens = await authService.refresh();
+                originalRequest.headers.Authorization = `Bearer ${tokens.access}`;
                 return api(originalRequest);
             } catch (refreshError) {
-                // Если не удалось обновить токен, разлогиниваем пользователя
                 authService.logout();
                 window.location.href = '/login';
                 return Promise.reject(refreshError);
             }
         }
+
         return Promise.reject(error);
     }
 );
 
-export default api;
+export const getCategories = async () => {
+    const response = await api.get('/categories/api/');
+    return response.data;
+};
+
+export const getPosts = async () => {
+    const response = await api.get('/posts/api/');
+    return response.data;
+};
+
+export { api };
