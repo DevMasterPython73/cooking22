@@ -1,0 +1,14 @@
+{% extends "base.html" %} <!-- Если у вас есть базовый шаблон -->
+
+{% block content %}
+<h1>Удаление статьи</h1>
+<p>Вы действительно хотите удалить статью с названием: "{{ post.title }}"?</p>
+<form action="" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Да, удалить" class="btn btn-danger">
+    <a href="{{ post.get_absolute_url }}" class="btn btn-dark">Назад</a>
+</form>
+<div>
+    <div style="margin-top: 720px;"></div>
+</div>
+{% endblock %}
