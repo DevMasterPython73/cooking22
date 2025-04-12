@@ -7,7 +7,8 @@ from django.views.decorators.cache import cache_page
 from .views import (
     Index, ArticleByCategory, PostDetail, AddPost, PostUpdate, PostDelete,
     SearchResult, user_login, user_logout, register, add_comment, profile,
-    UserChangePassword, CookingAPI, CookingAPIDetail, CookingCategoryAPI, CookingCategoryAPIDetail, HomeDataView
+    UserChangePassword, CookingAPI, CookingAPIDetail, CookingCategoryAPI, CookingCategoryAPIDetail, HomeDataView,
+    CategoryListView, PostListView
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -98,4 +99,6 @@ urlpatterns = [
     ),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=1), name='schema-json'),
     path('api/home-data/', HomeDataView.as_view(), name='home-data'),
+    path('categories/', CategoryListView.as_view(), name='category-list'),
+    path('posts/', PostListView.as_view(), name='post-list'),
 ]

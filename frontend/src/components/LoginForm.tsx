@@ -1,51 +1,86 @@
-import { useState } from 'react';
-import { authService } from '../services/auth';
+import { useForm } from '../hooks/useForm';
+import { FormErrors } from './FormErrors';
 import { useRouter } from 'next/router';
+import { authService } from '../services/auth';
+import { useNotifications } from '../hooks/useNotifications';
+
+interface LoginFormData {
+    username: string;
+    password: string;
+}
 
 export const LoginForm = () => {
     const router = useRouter();
-    const [formData, setFormData] = useState({
+    const { showSuccess, showError } = useNotifications();
+    const {
+        formData,
+        errors,
+        handleChange,
+        setErrors,
+        clearErrors
+    } = useForm<LoginFormData>({
         username: '',
         password: ''
     });
-    const [error, setError] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        clearErrors();
+
         try {
             await authService.login(formData);
-            router.push('/dashboard'); // Редирект после успешного входа
-        } catch (err) {
-            setError('Неверные учетные данные');
+            showSuccess('Вы успешно вошли в систему!');
+            router.push('/dashboard');
+        } catch (error: any) {
+            if (error.response?.data) {
+                setErrors({
+                    fieldErrors: error.response.data,
+                    nonFieldErrors: error.response.data.non_field_errors
+                });
+            } else {
+                showError('Ошибка входа. Проверьте ваши учетные данные.');
+            }
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Имя пользователя:</label>
-                <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => setFormData({
-                        ...formData,
-                        username: e.target.value
-                    })}
-                />
-            </div>
-            <div>
-                <label>Пароль:</label>
-                <input
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({
-                        ...formData,
-                        password: e.target.value
-                    })}
-                />
-            </div>
-            {error && <div style={{ color: 'red' }}>{error}</div>}
-            <button type="submit">Войти</button>
-        </form>
+        <>
+            <h2 className="text-center">Войти в аккаунт</h2>
+            <form onSubmit={handleSubmit}>
+                <FormErrors errors={errors} />
+                
+                <div className="mb-3">
+                    <label htmlFor="username" className="form-label">
+                        Имя пользователя
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="username"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">
+                        Пароль
+                    </label>
+                    <input
+                        type="password"
+                        className="form-control"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <button type="submit" className="btn btn-dark w-100">
+                    Войти
+                </button>
+            </form>
+        </>
     );
 };

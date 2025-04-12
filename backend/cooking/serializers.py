@@ -7,7 +7,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('title', 'category', 'created_at', 'content', 'author')
+        fields = ['id', 'title', 'slug', 'content', 'image', 'created_at', 'author']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -15,4 +15,4 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('title', 'id')
+        fields = ['id', 'name', 'slug']
