@@ -2,6 +2,10 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-image: url('./img/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .container {
@@ -74,3 +78,65 @@ main {
 .card-img-top {
     object-fit: cover;
 }
+
+.form-errors {
+    margin-top: 0.5rem;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin: 0.25rem 0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .error-message.required {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .error-message.validation {
+    background-color: #f8d7da;
+  }
+  
+  .error-message.generic {
+    background-color: #d1ecf1;
+    color: #0c5460;
+  }
+
+  .form-errors {
+    margin-top: 0.5rem;
+  }
+  
+  .error-message {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0;
+  }
+  
+  .error-message.validation {
+    color: #dc3545;
+    background-color: #f8d7da;
+  }
+  
+  .error-message.required {
+    color: #856404;
+    background-color: #fff3cd;
+  }
+  
+  .error-message.server {
+    color: #721c24;
+    background-color: #f5c6cb;
+  }
+  
+  .error-message.warning {
+    color: #856404;
+    background-color: #fff3cd;
+  }
+  
+  .error-message.info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+  }

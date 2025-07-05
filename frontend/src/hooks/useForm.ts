@@ -1,51 +1,68 @@
 import { useState } from 'react';
 
-interface FormErrors {
-    fieldErrors?: { [key: string]: string[] };
-    nonFieldErrors?: string[];
+interface FormError {
+  message: string;
+  type?: string;
 }
 
-export const useForm = <T extends object>(initialState: T) => {
-    const [formData, setFormData] = useState<T>(initialState);
-    const [errors, setErrors] = useState<FormErrors>();
+interface FormErrors {
+  fieldErrors?: Record<string, FormError[]>;
+  nonFieldErrors?: FormError[];
+}
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+export const useForm = <T extends Record<string, any>>(initialState: T) => {
+  const [formData, setFormData] = useState<T>(initialState);
+  const [errors, setErrors] = useState<FormErrors>({});
 
-    const setFieldError = (field: keyof T, error: string) => {
-        setErrors(prev => ({
-            ...prev,
-            fieldErrors: {
-                ...prev?.fieldErrors,
-                [field]: [error]
-            }
-        }));
-    };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-    const setNonFieldError = (error: string) => {
-        setErrors(prev => ({
-            ...prev,
-            nonFieldErrors: [...(prev?.nonFieldErrors || []), error]
-        }));
-    };
+  const setFieldError = (field: keyof T, message: string, type: string = 'validation') => {
+    setErrors(prev => ({
+      ...prev,
+      fieldErrors: {
+        ...prev.fieldErrors,
+        [field as string]: [{ message, type }]
+      }
+    }));
+  };
 
-    const clearErrors = () => {
-        setErrors(undefined);
-    };
+  const setNonFieldError = (message: string, type: string = 'generic') => {
+    setErrors(prev => ({
+      ...prev,
+      nonFieldErrors: [...(prev.nonFieldErrors || []), { message, type }]
+    }));
+  };
 
-    return {
-        formData,
-        setFormData,
-        errors,
-        setErrors,
-        handleChange,
-        setFieldError,
-        setNonFieldError,
-        clearErrors
-    };
+  const clearErrors = (field?: keyof T) => {
+    if (field) {
+      setErrors(prev => {
+        const { [field as string]: _, ...rest } = prev.fieldErrors || {};
+        return { ...prev, fieldErrors: rest };
+      });
+    } else {
+      setErrors({});
+    }
+  };
+
+  const getFieldErrors = (field: keyof T): FormError[] => {
+    return errors.fieldErrors?.[field as string] || [];
+  };
+
+  return {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    handleChange,
+    setFieldError,
+    setNonFieldError,
+    clearErrors,
+    getFieldErrors
+  };
 };

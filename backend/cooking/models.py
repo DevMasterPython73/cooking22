@@ -5,11 +5,12 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     """Категория новостей"""
+    name = models.CharField(max_length=255, verbose_name='Название категории')
     title = models.CharField(max_length=255, verbose_name='Название категории')
 
     def __str__(self):
         """Возвращает строковое представление объекта"""
-        return self.title
+        return self.name
 
     def get_absolute_url(self):
         """Возвращает URL для просмотра деталей категории"""
@@ -23,10 +24,11 @@ class Category(models.Model):
 class Post(models.Model):
     """Для новостных постов"""
     title = models.CharField(max_length=255, verbose_name='Заголовок статьи')
+    slug = models.SlugField(unique=True)
     content = models.TextField(default='Скоро тут будет статья ....', verbose_name='Текст статьи')
+    image = models.ImageField(upload_to='images/', verbose_name='Изображение')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
-    photo = models.ImageField(upload_to='photos/', blank=True, null=True, verbose_name='Изображение')
     watched = models.IntegerField(default=0, verbose_name='Просмотры')
     is_published = models.BooleanField(default=True, verbose_name='Публикация')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', related_name='posts')
@@ -70,3 +72,13 @@ class Tag(models.Model):
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+
+
+class Recipe(models.Model):
+    title = models.CharField(max_length=255)
+    link = models.URLField()
+    image_url = models.URLField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title
