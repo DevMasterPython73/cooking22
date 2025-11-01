@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import { Layout } from '../components/Layout';
 import { MessageProvider } from '../context/MessageContext';
 import '../styles/globals.css';
@@ -23,11 +24,16 @@ function MyApp({ Component, pageProps }: AppProps) {
     }, [isProtectedRoute, router]);
 
     return (
-        <MessageProvider>
-            <Layout>
-                <Component {...pageProps} />
-            </Layout>
-        </MessageProvider>
+        <>
+            <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            </Head>
+            <MessageProvider>
+                <Layout>
+                    <Component {...pageProps} />
+                </Layout>
+            </MessageProvider>
+        </>
     );
 }
 

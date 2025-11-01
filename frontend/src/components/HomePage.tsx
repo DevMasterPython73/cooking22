@@ -2,24 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { fetchCategories, fetchPosts } from '../services/api';
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-}
-
-interface Post {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  image: string;
-  author: string;
-  created_at: string;
-  updated_at: string;
-  views: number;
-}
+import { Category, Post } from '@/types';
 
 export const HomePage: React.FC = () => {
   const [state, setState] = useState({
@@ -36,12 +19,12 @@ export const HomePage: React.FC = () => {
     const loadData = async () => {
       try {
         setState(prev => ({ ...prev, isLoading: true, error: null, authError: false }));
-        
+
         const [categories, posts] = await Promise.all([
           fetchCategories(),
           fetchPosts()
         ]);
-        
+
         setState({
           categories,
           posts,
@@ -58,12 +41,11 @@ export const HomePage: React.FC = () => {
               authError: true,
               error: 'Доступ запрещен. Требуется авторизация.'
             }));
-            // Перенаправление через 3 секунды
             setTimeout(() => router.push('/login'), 3000);
             return;
           }
         }
-        
+
         setState(prev => ({
           ...prev,
           isLoading: false,
@@ -112,7 +94,7 @@ export const HomePage: React.FC = () => {
         <div className="alert alert-danger" role="alert">
           {state.error}
         </div>
-        <button 
+        <button
           className="btn btn-primary"
           onClick={() => window.location.reload()}
         >
@@ -125,14 +107,12 @@ export const HomePage: React.FC = () => {
   return (
     <div className="container py-4">
       <h2 className="mb-4 text-center">Кулинарный портал</h2>
-      
+
       <div className="row">
-        {/* Боковая панель с категориями */}
+        {/* Сайдбар категорий */}
         <div className="col-md-3 mb-4 mb-md-0">
           <div className="card">
-            <div className="card-header bg-primary text-white">
-              Категории
-            </div>
+            <div className="card-header bg-primary text-white">Категории</div>
             <div className="list-group list-group-flush">
               {state.categories.map(category => (
                 <button
@@ -142,7 +122,7 @@ export const HomePage: React.FC = () => {
                 >
                   {category.name}
                   <span className="badge bg-primary rounded-pill">
-                    {state.posts.filter(p => p.category === category.name).length}
+                    {state.posts.filter(p => p.category === category.id).length}
                   </span>
                 </button>
               ))}
@@ -150,62 +130,64 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Основной контент с постами */}
+        {/* Основной контент */}
         <div className="col-md-9">
           {state.posts.length === 0 ? (
             <div className="alert alert-info">
               Пока нет ни одной статьи. Будьте первым, кто добавит рецепт!
             </div>
           ) : (
-            state.posts.map(post => (
-              <div key={post.id} className="card mb-4 shadow-sm">
-                <div className="card-header bg-light">
-                  <span className="badge bg-secondary">{post.category}</span>
-                </div>
-                <div className="row g-0">
-                  <div className="col-md-4">
-                    <img
-                      src={post.image || "/placeholder-recipe.jpg"}
-                      className="img-fluid rounded-start h-100 object-fit-cover"
-                      alt={post.title}
-                      style={{ maxHeight: '200px', width: '100%' }}
-                    />
+            state.posts.map(post => {
+              const category = state.categories.find(c => c.id === post.category);
+
+              return (
+                <div key={post.id} className="card mb-4 shadow-sm">
+                  <div className="card-header bg-light">
+                    <span className="badge bg-secondary">
+                      {category?.name || 'Без категории'}
+                    </span>
                   </div>
-                  <div className="col-md-8">
-                    <div className="card-body">
-                      <h5 className="card-title">{post.title}</h5>
-                      <p className="card-text text-muted">
-                        {post.content.substring(0, 150)}...
-                      </p>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <button
-                          onClick={() => router.push(`/post/${post.id}`)}
-                          className="btn btn-outline-primary"
-                        >
-                          Читать далее
-                        </button>
-                        <small className="text-muted">
-                          {formatDate(post.created_at)}
-                        </small>
+                  <div className="row g-0">
+                    <div className="col-md-4">
+                      <img
+                        src={post.image || "/placeholder-recipe.jpg"}
+                        className="img-fluid rounded-start h-100 object-fit-cover"
+                        alt={post.title}
+                        style={{ maxHeight: '200px', width: '100%' }}
+                      />
+                    </div>
+                    <div className="col-md-8">
+                      <div className="card-body">
+                        <h5 className="card-title">{post.title}</h5>
+                        <p className="card-text text-muted">
+                          {post.content.substring(0, 150)}...
+                        </p>
+                        <div className="d-flex justify-content-between align-items-center">
+                          <button
+                            onClick={() => router.push(`/post/${post.id}`)}
+                            className="btn btn-outline-primary"
+                          >
+                            Читать далее
+                          </button>
+                          <small className="text-muted">
+                            {formatDate(post.created_at)}
+                          </small>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <div className="card-footer bg-transparent d-flex justify-content-between">
+                    <small className="text-muted">Автор: {post.author || 'Аноним'}</small>
+                    <small className="text-muted">Просмотров: {post.views}</small>
+                    {post.created_at !== post.updated_at && (
+                      <small className="text-muted">
+                        Обновлено: {formatDate(post.updated_at)}
+                      </small>
+                    )}
+                  </div>
                 </div>
-                <div className="card-footer bg-transparent d-flex justify-content-between">
-                  <small className="text-muted">
-                    Автор: {post.author || 'Аноним'}
-                  </small>
-                  <small className="text-muted">
-                    Просмотров: {post.views}
-                  </small>
-                  {post.created_at !== post.updated_at && (
-                    <small className="text-muted">
-                      Обновлено: {formatDate(post.updated_at)}
-                    </small>
-                  )}
-                </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>

@@ -25,18 +25,18 @@ class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Category
-        fields = ['id', 'title', 'description']
+        fields = ['id', 'name', 'title', 'post_count']
         read_only_fields = ['post_count']
 
     
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор комментариев с информацией об авторе"""
-    author = UserSerializer(read_only=True)
+    author = UserSerializer(read_only=True, source='user')
     
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'created_at', 'author']
+        fields = ['id', 'text', 'created_at', 'author']
         read_only_fields = ['created_at', 'author']
 
 class PostSerializer(serializers.ModelSerializer):

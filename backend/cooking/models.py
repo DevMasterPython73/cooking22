@@ -5,12 +5,12 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     """Категория новостей"""
-    name = models.CharField(max_length=255, verbose_name='Название категории')
+    name = models.CharField(max_length=255, verbose_name='Название категории', blank=True)
     title = models.CharField(max_length=255, verbose_name='Название категории')
 
     def __str__(self):
         """Возвращает строковое представление объекта"""
-        return self.name
+        return self.name or self.title
 
     def get_absolute_url(self):
         """Возвращает URL для просмотра деталей категории"""
@@ -26,7 +26,7 @@ class Post(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок статьи')
     slug = models.SlugField(unique=True)
     content = models.TextField(default='Скоро тут будет статья ....', verbose_name='Текст статьи')
-    image = models.ImageField(upload_to='images/', verbose_name='Изображение')
+    image = models.ImageField(upload_to='images/', verbose_name='Изображение', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
     watched = models.IntegerField(default=0, verbose_name='Просмотры')

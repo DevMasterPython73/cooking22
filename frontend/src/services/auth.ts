@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 interface LoginData {
     username: string;
     password: string;
@@ -38,20 +40,20 @@ class AuthService {
     }
 
     public async login(data: LoginData): Promise<TokenResponse> {
-        const response = await axios.post('/api/token/', data);
+        const response = await axios.post(`${API_BASE_URL}/api/token/`, data);
         this.setTokens(response.data);
         return response.data;
     }
 
     public async register(data: RegisterData): Promise<void> {
-        await axios.post('/api/register/', data);
+        await axios.post(`${API_BASE_URL}/api/register/`, data);
     }
 
     public async refresh(): Promise<TokenResponse> {
         if (!this.refreshToken) {
             throw new Error('No refresh token available');
         }
-        const response = await axios.post('/api/token/refresh/', {
+        const response = await axios.post(`${API_BASE_URL}/api/token/refresh/`, {
             refresh: this.refreshToken
         });
         this.setTokens(response.data);

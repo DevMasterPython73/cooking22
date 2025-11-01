@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordChangeView
 from .serializers import PostSerializer, CategorySerializer
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, IsAuthenticatedOrReadOnly
 from django.views.generic import TemplateView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -140,7 +140,7 @@ class PostViewSet(viewsets.ModelViewSet):
     """ViewSet для работы с постами"""
     queryset = Post.objects.filter(is_published=True)
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = StandardResultsSetPagination
 
     @action(detail=True, methods=['get'])
@@ -155,7 +155,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """ViewSet для работы с категориями"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @action(detail=True, methods=['get'])
     def posts(self, request, pk=None):
